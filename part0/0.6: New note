@@ -1,0 +1,15 @@
+title "New note at Single Page App" Authentication Sequence
+
+note over browser:
+the user adds a new note and click on the "save" button
+end note
+
+note over browser:
+browser update the DOM with the updated data.json
+end note
+
+browser->server: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note_spa
+browser->server: [{ content: "React power", date: "2019-08-06" }, ...]
+note over server:
+server receives this post request from the browser and update data.json
+end note
