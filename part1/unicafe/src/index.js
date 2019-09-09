@@ -15,7 +15,12 @@ const Button = ({ handleClick, text }) => {
 
 const Statistic = ({text, value}) => {
   return (
-    <div>{`${text} ${value}`}</div>
+    <tbody>
+      <tr>
+        <td>{text}</td>
+        <td>{text === 'positive' ? value + ' %' : value}</td>
+      </tr>
+    </tbody>
   )
 }
 
@@ -28,14 +33,14 @@ const Statistics = ({ good, neutral, bad }) => {
     <>
       <h1>statstics</h1>
       {(good || neutral || bad) ? (
-        <>
+        <table>
           <Statistic text="good" value={good}/>
           <Statistic text="neutral" value={neutral}/>
           <Statistic text="bad" value={bad}/>
           <Statistic text="all" value={all}/>
           <Statistic text="average" value={average}/>
           <Statistic text="positive" value={positive}/>
-        </>
+        </table>
       ) : <p>No feedback given</p>}
     </>
   )
