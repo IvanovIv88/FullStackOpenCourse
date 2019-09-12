@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Total = ({parts}) => {
-    const totalExercises = parts.reduce(function(total, part) {
+    const totalExercises = parts.reduce((total, part) => {
         return total + part.exercises
     }, 0)
 
