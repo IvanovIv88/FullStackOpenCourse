@@ -1,10 +1,12 @@
 import React from 'react';
 
-const Total = (props) => {
-    const {parts} = props;
+const Total = ({parts}) => {
+    const totalExercises = parts.reduce(function(total, part) {
+        return total + part.exercises
+    }, 0)
 
     return (
-        <p>Number of exercises {parts[0].exercises + parts[1].exercises + parts[2].exercises}</p>
+        <p><b>total of {totalExercises} exercises</b></p>
     )
   }
 
