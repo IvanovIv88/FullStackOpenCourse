@@ -1,19 +1,23 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 
 import Persons from './components/Persons';
 import PersonForm from './components/PersonForm';
 import Filter from './components/Filter';
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => [
+        setPersons(response.data)
+      ])
+  }, [])
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -32,14 +36,17 @@ const App = () => {
     const checkDublicates = persons.filter(persons => persons.name === newName)
 
     if (!checkDublicates.length) {
-      const nameObject = {
-        name: newName,
-        number: newNumber
-      }
-
-      setPersons(persons.concat(nameObject))
-      setNewName('')
-      setNewNumber('')
+      axios
+       .post('http://localhost:3001/persons', {
+            name: newName,
+            number: newNumber
+       })
+       .then(response => setPersons(
+          persons.concat(response.data),
+       ))
+       
+       setNewName('')
+       setNewNumber('')
     } else {
       alert(`${newName} is already added to phonebook`)
     }
@@ -59,7 +66,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} newFilter={newFilter}/>
+      <Persons persons={persons} newFilter={newFilter} />
     </div>
   )
 }
