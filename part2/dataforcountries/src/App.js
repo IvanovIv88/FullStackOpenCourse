@@ -24,7 +24,7 @@ const App = () => {
   return (
     <div>
       <Search newSearch={newSearch} handleSearchChange={handleSearchChange} />
-      <Content countries={countries} newSearch={newSearch}/>
+      <Content countries={countries} newSearch={newSearch} />
     </div>
   )
 }

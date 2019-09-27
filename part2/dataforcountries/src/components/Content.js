@@ -1,6 +1,17 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+
+import CountryInfo from './CountryInfo'
 
 const Content = ({ countries, newSearch }) => {
+    const [countryInfo, setCountryInfo] = useState('')
+
+    useEffect(() => {
+        setCountryInfo('')
+    }, [newSearch])
+
+    const setToShowCountryInfo = (country) => {
+        setCountryInfo(country)
+    }
 
     const filteredCountries = newSearch ? countries.filter(country => country.name.toLowerCase().includes(newSearch.toLowerCase())) : false
 
@@ -13,26 +24,24 @@ const Content = ({ countries, newSearch }) => {
     } else if (filteredCountries.length < 10 && filteredCountries.length > 1) {
         return (
             <>
-                {filteredCountries.map((country, index) => <div key={index}>{country.name}</div>)}
+                {filteredCountries.map((country, index) =>
+                    <>
+                        <div key={index}>{country.name}
+                            <button key={index} onClick={() => setToShowCountryInfo(country)}>show</button>
+                        </div>
+
+                    </>
+                )}
+                {countryInfo ? <CountryInfo country={countryInfo} /> : null}
             </>
         )
     } else if (filteredCountries.length === 1) {
         const country = filteredCountries[0]
 
         return (
-            <>
-                <h1>{country.name}</h1>
-                <div>{`capital ${country.capital}`}</div>
-                <div>{`population ${country.population}`}</div>
-                <h2>languages</h2>
-                <ul>
-                    {country.languages.map((language, index) => (<li key={index}>{language.name}</li>))}
-                </ul>
-                <img border="1" alt='' src={country.flag} width="150" height="100"></img>
-            </>
+            <CountryInfo country={country} />
         )
     }
-
     else {
         return null
     }
