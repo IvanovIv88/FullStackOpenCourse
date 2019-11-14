@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import phonebookService from './services/phonebookService'
 
 import Persons from './components/Persons';
 import PersonForm from './components/PersonForm';
@@ -12,8 +12,8 @@ const App = () => {
   const [newFilter, setNewFilter] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
+    phonebookService
+      .getAll()
       .then(response => [
         setPersons(response.data)
       ])
@@ -36,11 +36,12 @@ const App = () => {
     const checkDublicates = persons.filter(persons => persons.name === newName)
 
     if (!checkDublicates.length) {
-      axios
-       .post('http://localhost:3001/persons', {
-            name: newName,
-            number: newNumber
-       })
+      const phonebookObject = {
+        name: newName,
+        number: newNumber
+      }
+      phonebookService
+       .create(phonebookObject)
        .then(response => setPersons(
           persons.concat(response.data),
        ))
