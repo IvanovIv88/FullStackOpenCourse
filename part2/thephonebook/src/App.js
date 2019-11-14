@@ -41,7 +41,7 @@ const App = () => {
         number: newNumber
       }
       phonebookService
-       .create(phonebookObject)
+       .createPerson(phonebookObject)
        .then(response => setPersons(
           persons.concat(response.data),
        ))
@@ -51,7 +51,22 @@ const App = () => {
     } else {
       alert(`${newName} is already added to phonebook`)
     }
+  }
 
+  const deleteName = (id, name) => {
+    const message = `Delete ${name} ?`
+    const result = window.confirm(message)
+    if (result) {
+      phonebookService
+        .deletePerson(id)
+        .then(() => phonebookService
+          .getAll()
+          .then(response => [
+            setPersons(response.data)
+          ]))
+    } else {
+      return
+    }
   }
 
   return (
@@ -67,7 +82,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} newFilter={newFilter} />
+      <Persons persons={persons} newFilter={newFilter}  deleteName={deleteName}/>
     </div>
   )
 }
