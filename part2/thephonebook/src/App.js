@@ -4,12 +4,15 @@ import phonebookService from './services/phonebookService'
 import Persons from './components/Persons';
 import PersonForm from './components/PersonForm';
 import Filter from './components/Filter';
+import Notification from './components/Notification';
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [message, setMessage] = useState(null);
+  const [meesageColor, setMessageColor] = useState('')
 
   useEffect(() => {
     phonebookService
@@ -34,7 +37,7 @@ const App = () => {
   const addName = (event) => {
     event.preventDefault()
     const checkDublicates = persons.filter(persons => persons.name === newName)
-    
+
     if (!checkDublicates.length) {
       const phonebookObject = {
         name: newName,
@@ -45,6 +48,11 @@ const App = () => {
         .then(returnedPerson => setPersons(
           persons.concat(returnedPerson),
         ))
+      setMessageColor('green')
+      setMessage(`Added ${phonebookObject.name}`);
+      setTimeout(() => {
+        setMessage(null)
+      }, 4000)
 
       setNewName('')
       setNewNumber('')
@@ -60,9 +68,20 @@ const App = () => {
         }
 
         phonebookService
-        .updatePerson(dublicateObject.id, newPhonebookObject)
-        .then(returnedPerson => setPersons(persons.map(person => person.id !== dublicateObject.id ? person : newPhonebookObject)))
-        
+          .updatePerson(dublicateObject.id, newPhonebookObject)
+          .then(returnedPerson => setPersons(persons.map(person => person.id !== dublicateObject.id ? person : newPhonebookObject)))
+          .catch(error => {
+            setMessageColor('red')
+            setMessage(`Information of ${newPhonebookObject.name}' has already been removed from server`);
+            setTimeout(() => {
+              setMessage(null)
+            }, 4000)
+          })
+        setMessageColor('green')
+        setMessage(`Changed ${newPhonebookObject.name}'s number`);
+        setTimeout(() => {
+          setMessage(null)
+        }, 4000)
         setNewName('')
         setNewNumber('')
       }
@@ -76,6 +95,13 @@ const App = () => {
       phonebookService
         .deletePerson(id)
         .then(deletedPerson => setPersons(persons.filter(persons => persons.id !== id)))
+        .catch(error => {
+          setMessageColor('red')
+          setMessage(`Information of ${name}' has already been removed from server`);
+          setTimeout(() => {
+            setMessage(null)
+          }, 4000)
+        })
     } else {
       return
     }
@@ -84,6 +110,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} color={meesageColor} />
       <Filter newFilter={newFilter} handleFilterChange={handleFilterChange} />
       <h3>Add a new</h3>
       <PersonForm
@@ -94,7 +121,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} newFilter={newFilter}  deleteName={deleteName}/>
+      <Persons persons={persons} newFilter={newFilter} deleteName={deleteName} />
     </div>
   )
 }
