@@ -14,8 +14,8 @@ const App = () => {
   useEffect(() => {
     phonebookService
       .getAll()
-      .then(response => [
-        setPersons(response.data)
+      .then(initialPersons => [
+        setPersons(initialPersons)
       ])
   }, [])
 
@@ -34,22 +34,38 @@ const App = () => {
   const addName = (event) => {
     event.preventDefault()
     const checkDublicates = persons.filter(persons => persons.name === newName)
-
+    
     if (!checkDublicates.length) {
       const phonebookObject = {
         name: newName,
         number: newNumber
       }
       phonebookService
-       .createPerson(phonebookObject)
-       .then(response => setPersons(
-          persons.concat(response.data),
-       ))
-       
-       setNewName('')
-       setNewNumber('')
+        .createPerson(phonebookObject)
+        .then(returnedPerson => setPersons(
+          persons.concat(returnedPerson),
+        ))
+
+      setNewName('')
+      setNewNumber('')
     } else {
-      alert(`${newName} is already added to phonebook`)
+      const dublicateObject = checkDublicates[0];
+      const message = `${dublicateObject.name} is alredy added to phonebook, replace the old number with a new one?`
+      const result = window.confirm(message)
+
+      if (result) {
+        const newPhonebookObject = {
+          ...dublicateObject,
+          number: newNumber
+        }
+
+        phonebookService
+        .updatePerson(dublicateObject.id, newPhonebookObject)
+        .then(returnedPerson => setPersons(persons.map(person => person.id !== dublicateObject.id ? person : newPhonebookObject)))
+        
+        setNewName('')
+        setNewNumber('')
+      }
     }
   }
 
@@ -59,11 +75,7 @@ const App = () => {
     if (result) {
       phonebookService
         .deletePerson(id)
-        .then(() => phonebookService
-          .getAll()
-          .then(response => [
-            setPersons(response.data)
-          ]))
+        .then(deletedPerson => setPersons(persons.filter(persons => persons.id !== id)))
     } else {
       return
     }
